@@ -78,7 +78,7 @@ ON
             res.status(200).json({ message: "User found", blogs: blogs.rows });
         }
         else {
-            res.status(401).send("Failed to fetch");
+            res.status(401).send("Failed to fetch test");
         }
     } catch (error) {
         console.error("Error fetching blogs", error);
