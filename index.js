@@ -18,6 +18,13 @@ const connection = new Client({
 })
 connection.connect(() => console.log("This is Connected running on port ", port));
 
+// app.get('/networkStatus', async(req, res)=>{
+//     try {
+//         res.status(200).send("Backend is up")
+//     } catch (error) {
+//         res.status(500).send("Backend is down")
+//     }
+// })
 
 app.post('/SignUp', async (req, res) => {
     const { firstName, lastName, email, password } = req.body;
@@ -302,6 +309,18 @@ app.post('/getBookMarks', async (req, res) => {
     }
 });
 
+app.post('/getSpecificBlog', async(req, res)=>{
+    const {bloguuid} = req.body;
+    try {
+        const query = 'SELECT * FROM blogs JOIN users ON blogs.useruuid= users.useruuid WHERE bloguuid=$1';
+        const values =[bloguuid]
+        const response = await connection.query(query, values);
+        res.status(200).json({msg:"Fetched Successfully" , blogData :response.rows});
+    } catch (error) {
+        console.error("Error while fetching from backend", error);
+    }
+});
+
 
 app.post('/getFollowers', async (req, res) => {
     const { useruuid } = req.body;
@@ -320,9 +339,10 @@ app.post('/getBookMarksBlogs', async (req, res) => {
 
     try {
         const query = `
-      SELECT blogs.*
+      SELECT *
       FROM blogs
       JOIN blogsaved ON blogs.bloguuid = blogsaved.savedbloguuid
+      JOIN users ON blogsaved.useruuid = users.useruuid
       WHERE blogsaved.useruuid = $1
     `;
         const values = [useruuid];
