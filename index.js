@@ -157,7 +157,7 @@ app.post('/createReplies', async (req, res) => {
 }
 })
 
-app.post('/createReplies', async (req, res) => {
+app.post('/createUserFollowing', async (req, res) => {
     try {   
     const query = `
 CREATE TABLE IF NOT EXISTS public.userfollowing
