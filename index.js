@@ -34,6 +34,9 @@ app.get("/", async(req, res)=>{
     }
 })
 app.post('/createUser', async (req, res) => {
+    try {
+        
+    
     const query = `CREATE TABLE IF NOT EXISTS public.users
 (
     firstname text COLLATE pg_catalog."default" NOT NULL,
@@ -44,10 +47,15 @@ app.post('/createUser', async (req, res) => {
     CONSTRAINT users_pkey PRIMARY KEY (useruuid)
 )
 `
-    await connection.query(query, values);
+    await connection.query(query);
     res.json({
         msg: 'Table created '
     })
+} catch (error) {
+        req.json({
+            msg:error
+        })
+}
 })
 app.post('/SignUp', async (req, res) => {
     const { firstName, lastName, email, password } = req.body;
