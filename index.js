@@ -34,9 +34,7 @@ app.get("/", async(req, res)=>{
     }
 })
 app.post('/createUser', async (req, res) => {
-    try {
-        
-    
+    try {   
     const query = `CREATE TABLE IF NOT EXISTS public.users
 (
     firstname text COLLATE pg_catalog."default" NOT NULL,
@@ -57,6 +55,132 @@ app.post('/createUser', async (req, res) => {
         })
 }
 })
+
+app.post('/createBlog', async (req, res) => {
+    try {   
+    const query = `CREATE TABLE IF NOT EXISTS public.blogs
+(
+    usertitle text COLLATE pg_catalog."default" NOT NULL,
+    userinput text COLLATE pg_catalog."default" NOT NULL,
+    useruuid text COLLATE pg_catalog."default" NOT NULL,
+    bloguuid text COLLATE pg_catalog."default" NOT NULL,
+    created_at text COLLATE pg_catalog."default" NOT NULL,
+    CONSTRAINT blogs_pkey PRIMARY KEY (bloguuid),
+    CONSTRAINT blogs_userid_fkey FOREIGN KEY (useruuid)
+        REFERENCES public.users (useruuid) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+`
+    await connection.query(query);
+    res.json({
+        msg: 'Table created '
+    })
+} catch (error) {
+        req.json({
+            msg:error
+        })
+}
+})
+
+app.post('/createBlogLiked', async (req, res) => {
+    try {   
+    const query = `CREATE TABLE IF NOT EXISTS public.blogliked
+(
+    likedbloguuid text COLLATE pg_catalog."default" NOT NULL,
+    useruuid text COLLATE pg_catalog."default" NOT NULL,
+    CONSTRAINT fk_useruuid FOREIGN KEY (useruuid)
+        REFERENCES public.users (useruuid) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE CASCADE
+)
+
+`
+    await connection.query(query);
+    res.json({
+        msg: 'Table created '
+    })
+} catch (error) {
+        req.json({
+            msg:error
+        })
+}
+})
+
+app.post('/createBlogSaved', async (req, res) => {
+    try {   
+    const query = `CREATE TABLE IF NOT EXISTS public.blogsaved
+(
+    savedbloguuid text COLLATE pg_catalog."default" NOT NULL,
+    useruuid text COLLATE pg_catalog."default" NOT NULL,
+    CONSTRAINT savedbloguuid_fk FOREIGN KEY (savedbloguuid)
+        REFERENCES public.blogs (bloguuid) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+`
+    await connection.query(query);
+    res.json({
+        msg: 'Table created '
+    })
+} catch (error) {
+        req.json({
+            msg:error
+        })
+}
+})
+
+app.post('/createReplies', async (req, res) => {
+    try {   
+    const query = `CREATE TABLE IF NOT EXISTS public.replies
+(
+    repliedinput text COLLATE pg_catalog."default" NOT NULL,
+    fullname text COLLATE pg_catalog."default" NOT NULL,
+    replyuuid text COLLATE pg_catalog."default" NOT NULL,
+    created_at text COLLATE pg_catalog."default" NOT NULL,
+    bloguuid text COLLATE pg_catalog."default" NOT NULL,
+    CONSTRAINT replies_pkey PRIMARY KEY (replyuuid),
+    CONSTRAINT fk_bloguuid FOREIGN KEY (bloguuid)
+        REFERENCES public.blogs (bloguuid) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE CASCADE
+)
+`
+    await connection.query(query);
+    res.json({
+        msg: 'Table created '
+    })
+} catch (error) {
+        req.json({
+            msg:error
+        })
+}
+})
+
+app.post('/createReplies', async (req, res) => {
+    try {   
+    const query = `
+CREATE TABLE IF NOT EXISTS public.userfollowing
+(
+    useruuid text COLLATE pg_catalog."default" NOT NULL,
+    loggedinuseruuid text COLLATE pg_catalog."default" NOT NULL,
+    CONSTRAINT loggedin_user_uuid_fk FOREIGN KEY (loggedinuseruuid)
+        REFERENCES public.users (useruuid) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+`
+    await connection.query(query);
+    res.json({
+        msg: 'Table created '
+    })
+} catch (error) {
+        req.json({
+            msg:error
+        })
+}
+})
+
 app.post('/SignUp', async (req, res) => {
     const { firstName, lastName, email, password } = req.body;
     const useruuid = uuidv4();
