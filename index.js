@@ -10,11 +10,11 @@ app.use(cors());
 
 
 const connection = new Client({
-    host: 'localhost',
-    user: 'postgres',
-    port: 5432,
-    password: "Manu$123",
-    database: 'blogs_db'
+    host: process.env.DB_HOSTNAME,
+    user: process.env.DB_USERNAME,
+    port: process.env.DB_PORT,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME
 })
 connection.connect(() => console.log("This is Connected running on port ", port));
 
@@ -25,7 +25,22 @@ connection.connect(() => console.log("This is Connected running on port ", port)
 //         res.status(500).send("Backend is down")
 //     }
 // })
-
+app.post('/createUser', async (req, res) => {
+    const query = `CREATE TABLE IF NOT EXISTS public.users
+(
+    firstname text COLLATE pg_catalog."default" NOT NULL,
+    lastname text COLLATE pg_catalog."default" NOT NULL,
+    email text COLLATE pg_catalog."default" NOT NULL,
+    password text COLLATE pg_catalog."default" NOT NULL,
+    useruuid text COLLATE pg_catalog."default" NOT NULL,
+    CONSTRAINT users_pkey PRIMARY KEY (useruuid)
+)
+`
+    await connection.query(query, values);
+    res.json({
+        msg: 'Table created '
+    })
+})
 app.post('/SignUp', async (req, res) => {
     const { firstName, lastName, email, password } = req.body;
     const useruuid = uuidv4();
@@ -102,7 +117,7 @@ app.post('/getFollowingUsersData', async (req, res) => {
     const { loggedinuseruuid } = req.body;
     try {
         console.log("97");
-        
+
         const query = `SELECT users.firstname,
 users.lastname
 FROM users
@@ -114,7 +129,7 @@ WHERE loggedinuseruuid =$1;
         const blogs = await connection.query(query, values);
         if (blogs.rows.length > 0) {
             console.log("109");
-            
+
             res.status(200).json({ message: "User found", blogs: blogs.rows });
         }
         else {
@@ -309,13 +324,13 @@ app.post('/getBookMarks', async (req, res) => {
     }
 });
 
-app.post('/getSpecificBlog', async(req, res)=>{
-    const {bloguuid} = req.body;
+app.post('/getSpecificBlog', async (req, res) => {
+    const { bloguuid } = req.body;
     try {
         const query = 'SELECT * FROM blogs JOIN users ON blogs.useruuid= users.useruuid WHERE bloguuid=$1';
-        const values =[bloguuid]
+        const values = [bloguuid]
         const response = await connection.query(query, values);
-        res.status(200).json({msg:"Fetched Successfully" , blogData :response.rows});
+        res.status(200).json({ msg: "Fetched Successfully", blogData: response.rows });
     } catch (error) {
         console.error("Error while fetching from backend", error);
     }
