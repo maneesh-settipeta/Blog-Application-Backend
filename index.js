@@ -25,6 +25,14 @@ connection.connect(() => console.log("This is Connected running on port ", port)
 //         res.status(500).send("Backend is down")
 //     }
 // })
+
+app.get("/", async(req, res)=>{
+    try {
+        res.status(200).send("connection Success")
+    } catch (error) {
+        res.status(500).send("connection unsucessfull")
+    }
+})
 app.post('/createUser', async (req, res) => {
     const query = `CREATE TABLE IF NOT EXISTS public.users
 (
@@ -112,7 +120,7 @@ ON
 })
 
 
-
+ 
 app.post('/getFollowingUsersData', async (req, res) => {
     const { loggedinuseruuid } = req.body;
     try {
