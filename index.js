@@ -98,7 +98,7 @@ app.post('/createBlogLiked', async (req, res) => {
 `
     await connection.query(query);
     res.json({
-        msg: 'Table created '
+        msg: 'Table created createBlogLiked'
     })
 } catch (error) {
         req.json({
