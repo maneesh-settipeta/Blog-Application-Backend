@@ -18,7 +18,13 @@ const connection = new Client({
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME
 })
-connection.connect(() => console.log("This is Connected running on port ", port));
+connection.connect(err => {
+    if (err) {
+        console.error('Connection error', err.stack);
+    } else {
+        console.log('Connected to database');
+    }
+});
 
 // app.get('/networkStatus', async(req, res)=>{
 //     try {
