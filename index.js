@@ -1,12 +1,14 @@
 const { v4: uuidv4 } = require('uuid');
 const { format } = require('date-fns');
 const { Client } = require('pg');
-const cors = require('cors');
+//const cors = require('cors');
 const express = require('express')
 const port = 3000;
 const app = express()
 app.use(express.json());
-app.use(cors());
+//app.use(cors());
+require('dotenv').config();
+
 
 
 const connection = new Client({
@@ -26,39 +28,37 @@ connection.connect(() => console.log("This is Connected running on port ", port)
 //     }
 // })
 
-app.get("/", async(req, res)=>{
+app.get("/", async (req, res) => {
     try {
         res.status(200).send("connection Success")
     } catch (error) {
         res.status(500).send("connection unsucessfull")
     }
 })
+
 app.post('/createUser', async (req, res) => {
-    try {   
-    const query = `CREATE TABLE IF NOT EXISTS public.users
-(
-    firstname text COLLATE pg_catalog."default" NOT NULL,
-    lastname text COLLATE pg_catalog."default" NOT NULL,
-    email text COLLATE pg_catalog."default" NOT NULL,
-    password text COLLATE pg_catalog."default" NOT NULL,
-    useruuid text COLLATE pg_catalog."default" NOT NULL,
-    CONSTRAINT users_pkey PRIMARY KEY (useruuid)
-)
-`
-    await connection.query(query);
-    res.json({
-        msg: 'Table created '
-    })
-} catch (error) {
-        req.json({
-            msg:error
-        })
-}
-})
+    try {
+        const query = `CREATE TABLE IF NOT EXISTS public.users
+        (
+            firstname text COLLATE pg_catalog."default" NOT NULL,
+            lastname text COLLATE pg_catalog."default" NOT NULL,
+            email text COLLATE pg_catalog."default" NOT NULL,
+            password text COLLATE pg_catalog."default" NOT NULL,
+            useruuid text COLLATE pg_catalog."default" NOT NULL,
+            CONSTRAINT users_pkey PRIMARY KEY (useruuid)
+        )`;
+
+        await connection.query(query);
+        res.status(200).send("Table created successfully");
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Error creating table");
+    }
+});
 
 app.post('/createBlog', async (req, res) => {
-    try {   
-    const query = `CREATE TABLE IF NOT EXISTS public.blogs
+    try {
+        const query = `CREATE TABLE IF NOT EXISTS public.blogs
 (
     usertitle text COLLATE pg_catalog."default" NOT NULL,
     userinput text COLLATE pg_catalog."default" NOT NULL,
@@ -72,20 +72,20 @@ app.post('/createBlog', async (req, res) => {
         ON DELETE NO ACTION
 )
 `
-    await connection.query(query);
-    res.json({
-        msg: 'Table created '
-    })
-} catch (error) {
-        req.json({
-            msg:error
+        await connection.query(query);
+        res.json({
+            msg: 'Table created '
         })
-}
+    } catch (error) {
+        req.json({
+            msg: error
+        })
+    }
 })
 
 app.post('/createBlogLiked', async (req, res) => {
-    try {   
-    const query = `CREATE TABLE IF NOT EXISTS public.blogliked
+    try {
+        const query = `CREATE TABLE IF NOT EXISTS public.blogliked
 (
     likedbloguuid text COLLATE pg_catalog."default" NOT NULL,
     useruuid text COLLATE pg_catalog."default" NOT NULL,
@@ -96,20 +96,20 @@ app.post('/createBlogLiked', async (req, res) => {
 )
 
 `
-    await connection.query(query);
-    res.json({
-        msg: 'Table created createBlogLiked'
-    })
-} catch (error) {
-        req.json({
-            msg:error
+        await connection.query(query);
+        res.json({
+            msg: 'Table created createBlogLiked'
         })
-}
+    } catch (error) {
+        req.json({
+            msg: error
+        })
+    }
 })
 
 app.post('/createBlogSaved', async (req, res) => {
-    try {   
-    const query = `CREATE TABLE IF NOT EXISTS public.blogsaved
+    try {
+        const query = `CREATE TABLE IF NOT EXISTS public.blogsaved
 (
     savedbloguuid text COLLATE pg_catalog."default" NOT NULL,
     useruuid text COLLATE pg_catalog."default" NOT NULL,
@@ -119,20 +119,20 @@ app.post('/createBlogSaved', async (req, res) => {
         ON DELETE NO ACTION
 )
 `
-    await connection.query(query);
-    res.json({
-        msg: 'Table created '
-    })
-} catch (error) {
-        req.json({
-            msg:error
+        await connection.query(query);
+        res.json({
+            msg: 'Table created '
         })
-}
+    } catch (error) {
+        req.json({
+            msg: error
+        })
+    }
 })
 
 app.post('/createReplies', async (req, res) => {
-    try {   
-    const query = `CREATE TABLE IF NOT EXISTS public.replies
+    try {
+        const query = `CREATE TABLE IF NOT EXISTS public.replies
 (
     repliedinput text COLLATE pg_catalog."default" NOT NULL,
     fullname text COLLATE pg_catalog."default" NOT NULL,
@@ -146,20 +146,20 @@ app.post('/createReplies', async (req, res) => {
         ON DELETE CASCADE
 )
 `
-    await connection.query(query);
-    res.json({
-        msg: 'Table created '
-    })
-} catch (error) {
-        req.json({
-            msg:error
+        await connection.query(query);
+        res.json({
+            msg: 'Table created '
         })
-}
+    } catch (error) {
+        req.json({
+            msg: error
+        })
+    }
 })
 
 app.post('/createUserFollowing', async (req, res) => {
-    try {   
-    const query = `
+    try {
+        const query = `
 CREATE TABLE IF NOT EXISTS public.userfollowing
 (
     useruuid text COLLATE pg_catalog."default" NOT NULL,
@@ -170,18 +170,20 @@ CREATE TABLE IF NOT EXISTS public.userfollowing
         ON DELETE NO ACTION
 )
 `
-    await connection.query(query);
-    res.json({
-        msg: 'Table created '
-    })
-} catch (error) {
-        req.json({
-            msg:error
+        await connection.query(query);
+        res.json({
+            msg: 'Table created '
         })
-}
+    } catch (error) {
+        req.json({
+            msg: error
+        })
+    }
 })
 
 app.post('/SignUp', async (req, res) => {
+    console.log("185");
+
     const { firstName, lastName, email, password } = req.body;
     const useruuid = uuidv4();
     try {
@@ -218,6 +220,9 @@ app.post('/Login', async (req, res) => {
 })
 
 
+
+
+
 app.get('/blogs', async (req, res) => {
     try {
         const query = `SELECT 
@@ -252,7 +257,38 @@ ON
 })
 
 
- 
+app.get('/followers', async (req, res) => {
+    const { loggedinuseruuid } = req.query;
+    try {
+        console.log("9775785785");
+
+        const query = `SELECT users.firstname,
+users.lastname
+FROM users
+JOIN userfollowing
+ON users.useruuid= userfollowing.useruuid
+WHERE loggedinuseruuid =$1;
+`
+        const values = [loggedinuseruuid]
+        const blogs = await connection.query(query, values);
+        if (blogs.rows.length > 0) {
+            console.log("109");
+
+            res.status(200).json({ message: "User found", blogs: blogs.rows });
+        }
+        else {
+            res.status(401).send("Failed to fetch");
+        }
+    } catch (error) {
+        console.error("Error fetching blogs", error);
+        res.status(500).json({
+            msg: 'Error fetching blogs',
+            error: error
+        });
+    }
+})
+
+
 app.post('/getFollowingUsersData', async (req, res) => {
     const { loggedinuseruuid } = req.body;
     try {
@@ -276,7 +312,7 @@ WHERE loggedinuseruuid =$1;
             res.status(401).send("Failed to fetch");
         }
     } catch (error) {
-        console.error("Error fetching blogs", error);
+        console.error("Error fetching blogs", error.message);
         res.status(500).json({
             msg: 'Error fetching blogs',
             error: error
