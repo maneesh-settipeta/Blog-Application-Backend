@@ -277,15 +277,6 @@ ON users.useruuid= userfollowing.useruuid
 WHERE loggedinuseruuid =$1;
 `
         const values = [loggedinuseruuid]
-        console.log("connection host:", connection.host);
-        console.log("connection port:", connection.port);
-        console.log("connection db :", connection.database);
-        console.log("connection user:", connection.user);
-
-
-
-
-
         const blogs = await connection.query(query, values);
         console.log("blogs:::", blogs);
         if (blogs.rows.length > 0) {
@@ -306,18 +297,18 @@ WHERE loggedinuseruuid =$1;
 })
 
 
-app.post('/getFollowingUsersData', async (req, res) => {
+app.post('/followers', async (req, res) => {
     const { loggedinuseruuid } = req.body;
     try {
         console.log("97");
 
         const query = `SELECT users.firstname,
-users.lastname
-FROM users
-JOIN userfollowing
-ON users.useruuid= userfollowing.useruuid
-WHERE loggedinuseruuid =$1;
-`
+            users.lastname
+            FROM users
+            JOIN userfollowing
+            ON users.useruuid= userfollowing.useruuid
+            WHERE loggedinuseruuid =$1;
+            `
         const values = [loggedinuseruuid]
         const blogs = await connection.query(query, values);
         if (blogs.rows.length > 0) {
@@ -326,7 +317,7 @@ WHERE loggedinuseruuid =$1;
             res.status(200).json({ message: "User found", blogs: blogs.rows });
         }
         else {
-            res.status(401).send("Failed to fetch");
+            res.status(404).send("No followers found");
         }
     } catch (error) {
         console.error("Error fetching blogs", error.message);
@@ -338,7 +329,7 @@ WHERE loggedinuseruuid =$1;
 })
 
 
-app.post('/getReplies', async (req, res) => {
+app.post('/replies', async (req, res) => {
     const { bloguuid } = req.body
     try {
         const query = 'SELECT * FROM replies WHERE bloguuid=$1';
@@ -360,7 +351,7 @@ app.post('/getReplies', async (req, res) => {
 })
 
 
-app.post('/likedBlog', async (req, res) => {
+app.post('/blogLiked', async (req, res) => {
     const { bloguuid, useruuid } = req.body
     try {
         const query = 'INSERT INTO blogLiked (likedbloguuid,useruuid) VALUES($1,$2)';
@@ -373,7 +364,7 @@ app.post('/likedBlog', async (req, res) => {
 })
 
 
-app.post('/getLikes', async (req, res) => {
+app.post('/likes', async (req, res) => {
     const { useruuid } = req.body;
     try {
         const query = 'SELECT likedbloguuid FROM blogliked WHERE useruuid =$1'
@@ -386,7 +377,7 @@ app.post('/getLikes', async (req, res) => {
 });
 
 
-app.post('/addReplies', async (req, res) => {
+app.post('/replies', async (req, res) => {
     const { repliedinput, fullname, bloguuid } = req.body;
     const replyuuid = uuidv4();
     const now = new Date();
@@ -401,7 +392,7 @@ app.post('/addReplies', async (req, res) => {
     }
 });
 
-app.post('/Postblog', async (req, res) => {
+app.post('/blogs', async (req, res) => {
     const now = new Date();
     const formattedDateTime = format(now, 'yyyy-MM-dd HH:mm:ss');
     const { usertitle, userinput, useruuid } = req.body;
@@ -441,7 +432,7 @@ app.delete('/deleteBlog/:bloguuid/:userUuid', async (req, res) => {
 });
 
 
-app.post('/saveBookMarks', async (req, res) => {
+app.post('/bookMarks', async (req, res) => {
     const { savedbloguuid, useruuid } = req.body
     try {
         const query = 'INSERT INTO blogsaved (savedbloguuid, useruuid) VALUES($1,$2);'
@@ -487,7 +478,7 @@ app.post('/followUser', async (req, res) => {
 })
 
 
-app.delete('/unFollowedUser/:userUuid/:useruuid', async (req, res) => {
+app.delete('/followUser/:userUuid/:useruuid', async (req, res) => {
     const { useruuid, userUuid } = req.params;
     try {
         const query = 'DELETE FROM userfollowing WHERE loggedinuseruuid = $1 AND useruuid = $2 RETURNING *';
@@ -505,8 +496,8 @@ app.delete('/unFollowedUser/:userUuid/:useruuid', async (req, res) => {
 });
 
 
-app.post('/getBookMarks', async (req, res) => {
-    const { useruuid } = req.body;
+app.get('/bookMarks', async (req, res) => {
+    const { useruuid } = req.query;
     try {
         const query = 'SELECT savedbloguuid FROM blogsaved WHERE useruuid =$1'
         const values = [useruuid]
@@ -517,7 +508,7 @@ app.post('/getBookMarks', async (req, res) => {
     }
 });
 
-app.post('/getSpecificBlog', async (req, res) => {
+app.post('/specificBlog', async (req, res) => {
     const { bloguuid } = req.body;
     try {
         const query = 'SELECT * FROM blogs JOIN users ON blogs.useruuid= users.useruuid WHERE bloguuid=$1';
@@ -530,8 +521,8 @@ app.post('/getSpecificBlog', async (req, res) => {
 });
 
 
-app.post('/getFollowers', async (req, res) => {
-    const { useruuid } = req.body;
+app.get('/followers', async (req, res) => {
+    const { useruuid } = req.query;
     try {
         const query = 'SELECT useruuid FROM userfollowing WHERE loggedinuseruuid =$1'
         const values = [useruuid]
@@ -542,9 +533,8 @@ app.post('/getFollowers', async (req, res) => {
     }
 });
 
-app.post('/getBookMarksBlogs', async (req, res) => {
+app.post('/bookMarksBlogs', async (req, res) => {
     const { useruuid } = req.body;
-
     try {
         const query = `
       SELECT *
@@ -563,29 +553,29 @@ app.post('/getBookMarksBlogs', async (req, res) => {
     }
 });
 
-app.post('/getUserDetails', async (req, res) => {
-    const { loggedinuseruuid } = req.body;
+// app.post('/userDetails', async (req, res) => {
+//     const { loggedinuseruuid } = req.body;
 
-    try {
-        const query = `
-       SELECT users.*
-        FROM users
-        JOIN userfollowing ON users.useruuid = userfollowing.loggedinuseruuid
-        WHERE userfollowing.loggedinuseruuid = $1;
-      `;
-        const values = [loggedinuseruuid];
-        const userdetials = await connection.query(query, values);
+//     try {
+//         const query = `
+//        SELECT users.*
+//         FROM users
+//         JOIN userfollowing ON users.useruuid = userfollowing.loggedinuseruuid
+//         WHERE userfollowing.loggedinuseruuid = $1;
+//       `;
+//         const values = [loggedinuseruuid];
+//         const userdetials = await connection.query(query, values);
 
 
-        res.status(200).json({ data: userdetials.rows });
-    } catch (error) {
-        console.error("Error fetching saved blogs:", error);
-        res.status(500).json({ message: 'Error fetching saved blogs' });
-    }
-});
+//         res.status(200).json({ data: userdetials.rows });
+//     } catch (error) {
+//         console.error("Error fetching saved blogs:", error);
+//         res.status(500).json({ message: 'Error fetching saved blogs' });
+//     }
+// });
 
-app.post('/getBlogsUsersData', async (req, res) => {
-    const { getBlogsUsersData } = req.body;
+app.get('/getBlogsUsersData', async (req, res) => {
+    const { getBlogsUsersData } = req.query;
 
     try {
         const query = `
