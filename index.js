@@ -257,6 +257,7 @@ ON
 })
 
 
+
 app.get('/followers', async (req, res) => {
     const { loggedinuseruuid } = req.query;
     try {
@@ -270,9 +271,19 @@ ON users.useruuid= userfollowing.useruuid
 WHERE loggedinuseruuid =$1;
 `
         const values = [loggedinuseruuid]
+        console.log("connection host:", connection.host);
+        console.log("connection port:", connection.port);
+        console.log("connection db :", connection.database);
+        console.log("connection user:", connection.user);
+
+
+
+
+
         const blogs = await connection.query(query, values);
+        console.log("blogs:::", blogs);
         if (blogs.rows.length > 0) {
-            console.log("109");
+            console.log("1094556456");
 
             res.status(200).json({ message: "User found", blogs: blogs.rows });
         }
@@ -280,10 +291,10 @@ WHERE loggedinuseruuid =$1;
             res.status(401).send("Failed to fetch");
         }
     } catch (error) {
-        console.error("Error fetching blogs", error);
+        console.error("Error fetching blogs", error.message);
         res.status(500).json({
             msg: 'Error fetching blogs',
-            error: error
+            error: error.message
         });
     }
 })
