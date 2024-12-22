@@ -1,12 +1,12 @@
 const { v4: uuidv4 } = require('uuid');
 const { format } = require('date-fns');
 const { Client } = require('pg');
-//const cors = require('cors');
+const cors = require('cors');
 const express = require('express')
 const port = 3000;
 const app = express()
 app.use(express.json());
-//app.use(cors());
+app.use(cors());
 require('dotenv').config();
 
 
@@ -20,7 +20,7 @@ const connection = new Client({
 })
 connection.connect(err => {
     if (err) {
-        console.error('Connection error', err.stack);
+        console.error('Connection error:', err.stack);
     } else {
         console.log('Connected to database');
     }
