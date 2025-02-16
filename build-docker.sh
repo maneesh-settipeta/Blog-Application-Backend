@@ -14,6 +14,6 @@ echo "Building Docker image: maneeshsettipeta/$DOCKER_IMAGE_NAME:$VERSION"
 docker build -t maneeshsettipeta/$DOCKER_IMAGE_NAME:$VERSION .
 
 # Optional: Push the image to Docker Hub (uncomment the line below to enable this step)
-docker push maneeshsettipeta/$DOCKER_IMAGE_NAME:$VERSION
+# docker push maneeshsettipeta/$DOCKER_IMAGE_NAME:$VERSION
 
 echo "Docker image build completed successfully."
