@@ -6,10 +6,7 @@
   "scripts": {
     "start1": "node index.js",
     "start": "nodemon index.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "npm run build-app && npm run build-docker",
-    "build-app": "echo 'Building the app...'",  
-    "build-docker": "sh build-docker.sh" 
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
