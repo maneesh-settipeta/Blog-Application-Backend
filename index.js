@@ -9,8 +9,6 @@ app.use(express.json());
 app.use(cors());
 require('dotenv').config();
 
-
-
 const connection = new Client({
     host: process.env.DB_HOSTNAME,
     user: process.env.DB_USERNAME,
@@ -18,6 +16,7 @@ const connection = new Client({
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME
 })
+
 connection.connect(err => {
     if (err) {
         console.error('Connection error:', err.stack);
@@ -26,13 +25,6 @@ connection.connect(err => {
     }
 });
 
-// app.get('/networkStatus', async(req, res)=>{
-//     try {
-//         res.status(200).send("Backend is up")
-//     } catch (error) {
-//         res.status(500).send("Backend is down")
-//     }
-// })
 
 app.get("/", async (req, res) => {
     try {
@@ -285,7 +277,7 @@ WHERE loggedinuseruuid =$1;
             res.status(200).json({ message: "User found", blogs: blogs.rows });
         }
         else {
-            res.status(401).send("Failed to fetch");
+            res.status(404).send("User not found");
         }
     } catch (error) {
         console.error("Error fetching blogs", error.message);
