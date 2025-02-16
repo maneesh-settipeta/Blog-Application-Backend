@@ -36,10 +36,10 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Get image name and version from package.json
+      - name: Get image dockerImageName and version from package.json
         id: get-version
         run: |
-          IMAGE_NAME=$(jq -r '.name' package.json)
+          IMAGE_NAME=$(jq -r '.dockerImageName' package.json)
           IMAGE_VERSION=$(jq -r '.version' package.json)
           echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_ENV
           echo "IMAGE_VERSION=$IMAGE_VERSION" >> $GITHUB_ENV
