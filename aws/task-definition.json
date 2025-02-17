@@ -22,7 +22,28 @@
                 }
             ],
             "essential": true,
-            "environment": [],
+            "environment": [
+                {
+                    "name": "DB_NAME",
+                    "value": "blogapplication"
+                },
+                {
+                    "name": "DB_USERNAME",
+                    "value": "postgres"
+                },
+                {
+                    "name": "DB_PORT",
+                    "value": "5432"
+                },
+                {
+                    "name": "DB_HOSTNAME",
+                    "value": "blogapplication.c7sw0gimullx.us-east-1.rds.amazonaws.com"
+                },
+                {
+                    "name": "DB_PASSWORD",
+                    "value": "BlogDB$123"
+                }
+            ],
             "environmentFiles": [],
             "mountPoints": [],
             "volumesFrom": [],
