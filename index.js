@@ -243,7 +243,7 @@ ON
     blogs.useruuid = users.useruuid;`
         const blogs = await connection.query(query);
         if (blogs.rows.length > 0) {
-            res.status(200).json({ message: "User found...", blogs: blogs.rows });
+            res.status(200).json({ message: "Users found", blogs: blogs.rows });
         }
         else {
             res.status(401).send("Failed to fetch test");
